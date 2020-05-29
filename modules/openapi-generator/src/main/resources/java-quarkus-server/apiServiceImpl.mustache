@@ -1,7 +1,6 @@
 package {{package}}.impl;
 
 import {{package}}.*;
-import {{modelPackage}}.*;
 {{#operations}}{{#operation}}{{#isMultipart}}import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 {{/isMultipart}}{{/operation}}{{/operations}}
 
@@ -11,13 +10,13 @@ import {{modelPackage}}.*;
 import java.util.List;
 import {{package}}.NotFoundException;
 
-import java.io.InputStream;
-
-import javax.enterprise.context.RequestScoped;
+import org.eclipse.microprofile.opentracing.Traced;
+import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
-@RequestScoped
+@Traced
+@ApplicationScoped
 {{>generatedAnnotation}}
 {{#operations}}
 public class {{classname}}ServiceImpl implements {{classname}}Service {

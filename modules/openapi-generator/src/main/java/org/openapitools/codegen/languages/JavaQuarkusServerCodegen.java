@@ -1,6 +1,7 @@
 package org.openapitools.codegen.languages;
 
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.Schema;
 import org.apache.commons.lang3.BooleanUtils;
 import org.openapitools.codegen.*;
 import io.swagger.models.properties.ArrayProperty;
@@ -47,6 +48,9 @@ public class JavaQuarkusServerCodegen extends AbstractJavaJAXRSServerCodegen {
 
         apiTemplateFiles.put("apiService.mustache", ".java");
         apiTemplateFiles.put("apiServiceImpl.mustache", ".java");
+
+
+
         apiTestTemplateFiles.clear(); // TODO: add test template
         embeddedTemplateDir = templateDir = "java-quarkus-server";
 
@@ -86,10 +90,16 @@ public class JavaQuarkusServerCodegen extends AbstractJavaJAXRSServerCodegen {
                 (sourceFolder + '/' + apiPackage).replace(".", "/"), "NotFoundException.java")
                 .doNotOverwrite());
 
-
+        supportingFiles.add(new SupportingFile("ReadinessCheckImpl.mustache",
+                (implFolder + '/' + apiPackage + "/impl").replace(".", "/"), "ReadinessCheckImpl.java")
+                .doNotOverwrite());
+        supportingFiles.add(new SupportingFile("LivenessCheckImpl.mustache",
+                (implFolder + '/' + apiPackage + "/impl").replace(".", "/"), "LivenessCheckImpl.java")
+                .doNotOverwrite());
         supportingFiles.add(new SupportingFile("RestApplication.mustache",
                 (sourceFolder + '/' + invokerPackage).replace(".", "/"), "RestApplication.java")
                 .doNotOverwrite());
+
         supportingFiles.add(new SupportingFile("StringUtil.mustache",
                 (sourceFolder + '/' + invokerPackage).replace(".", "/"), "StringUtil.java"));
         supportingFiles.add(new SupportingFile("JacksonConfig.mustache",
@@ -210,5 +220,15 @@ public class JavaQuarkusServerCodegen extends AbstractJavaJAXRSServerCodegen {
     public Map<String, Object> postProcessSupportingFileData(Map<String, Object> objs) {
         generateYAMLSpecFile(objs);
         return super.postProcessSupportingFileData(objs);
+    }
+
+    @Override
+    public CodegenModel fromModel(String name, Schema model) {
+        CodegenModel codegenModel = super.fromModel(name, model);
+
+        codegenModel.imports.remove("ApiModelProperty");
+        codegenModel.imports.remove("ApiModel");
+
+        return codegenModel;
     }
 }
